@@ -16,10 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 export default function Home() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  //console.log(errors);
-
-  const [dateRetrouvailles, setDateRetrouvailles] = useState([])
+  const [dateRetrouvailles, setDateRetrouvailles] = useState(null)
   const [reload, setReload] = useState(0)
 
   useEffect(() => {
@@ -32,12 +29,12 @@ export default function Home() {
     })
       .then(response => response.json())
       .then(data => {
-        setDateRetrouvailles(data.dateRetrouvailles)
+        setDateRetrouvailles(data.dateRetrouvailles[0].debut)
       })
   }, [reload])
 
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: { dateRetrouvaille: string }) => {
     form.reset()
     if (data?.dateRetrouvaille) {
       fetch("/api/dateRetrouvaille", {
@@ -57,7 +54,7 @@ export default function Home() {
     }
   };
 
-  const calculDodo = date => {
+  const calculDodo = (date: string) => {
     // Convertir la chaîne de caractères en objet Date
     const dateChoisie = new Date(date);
 
@@ -94,11 +91,12 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
 
-      dodo count : {calculDodo(dateRetrouvailles[0]?.debut)}
+      {dateRetrouvailles ? <>dodo : {calculDodo(dateRetrouvailles)}</> : <>...</>}
 
       <br />
 
-      dateRetrouvailles : {dateRetrouvailles[0]?.debut}
+      {dateRetrouvailles ? <>dateRetrouvailles : {dateRetrouvailles}</> : <>...</>}
+
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
